@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voyager | AI Interview Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="voyager-body">
+
+    <div class="voyager-overlay"></div>
+
+    <main class="voyager-container">
+        <header class="v-header">
+            <a href="{{ url_for('index') }}" class="v-back-btn"><i class="fas fa-chevron-left"></i> BACK TO BASE</a>
+            <h1 class="v-title">VOYAGER <span class="v-accent">INITIALIZE</span></h1>
+            <p class="v-subtitle">Feed the AI with your mission parameters to begin.</p>
+        </header>
+
+        <div class="v-grid">
+
+            <section class="v-card upload-section">
+                <div class="v-card-content">
+                    <div class="v-icon-box">
+                        <i class="fas fa-file-code"></i>
+                    </div>
+                    <h2 class="v-card-title">Resume Profile</h2>
+                    <p class="v-card-text">Upload PDF/DOCX for AI analysis</p>
+
+                    <div class="file-drop-area" id="drop-area">
+                        <!-- Hidden Input with Name for Flask -->
+                        <input type="file" id="fileInput" name="resume" accept=".pdf,.docx" hidden>
+
+                        <button type="button" class="v-btn v-btn-secondary"
+                            onclick="document.getElementById('fileInput').click()">
+                            CHOOSE FILE
+                        </button>
+
+                        <!-- File name yahan dikhega bina layout hilaye -->
+                        <div id="fileNameDisplay"
+                            style="color: var(--accent); font-size: 0.8rem; margin-top: 10px; font-weight: 600;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="v-card params-section">
+                <!-- 1. Job Title with ID -->
+                <div class="v-input-group">
+                    <label class="v-label"><i class="fas fa-user-tag"></i> JOB TITLE</label>
+                    <input type="text" id="jobTitle" class="v-input" placeholder="e.g. Python Developer Intern">
+                </div>
+
+                <!-- 2. Description with ID -->
+                <div class="v-input-group">
+                    <label class="v-label"><i class="fas fa-list-check"></i> DESCRIPTION / SKILLS</label>
+                    <textarea id="jobDesc" class="v-input v-textarea"
+                        placeholder="Paste skills or job description here..."></textarea>
+                </div>
+
+                <footer class="v-action-footer">
+                    <div class="v-status">
+                        <span class="v-dot"></span>
+                        <span class="v-status-text">SYSTEM READY</span>
+                    </div>
+
+                    <!-- REMOVED <a> TAG: Ab ye layout ko nahi bigadega -->
+                    <button type="button" class="v-btn v-btn-primary" id="startBtn">
+                        START MISSION <i class="fas fa-bolt"></i>
+                    </button>
+                </footer>
+            </section>
+        </div>
+    </main>
+    <script>
+        // 1. Jab user file select kare, toh uska naam screen par dikhao
+        document.getElementById('fileInput').addEventListener('change', function () {
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            const fileName = this.files[0] ? this.files[0].name : "";
+
+            if (fileName) {
+                fileNameDisplay.textContent = "Selected: " + fileName;
+                fileNameDisplay.style.color = "#3b82f6"; // Blue accent color
+            }
+        });
+
+        // 2. Main Button Click Logic (Upload + Validation + Redirect)
+        document.getElementById('startBtn').addEventListener('click', async function (e) {
+            e.preventDefault(); // Default behaviour roko
+
+            const fileInput = document.getElementById('fileInput');
+            const title = document.getElementById('jobTitle').value.trim();
+            const desc = document.getElementById('jobDesc').value.trim();
+            const btn = this;
+
+            // --- VALIDATION ---
+            if (fileInput.files.length === 0 || title === "" || desc === "") {
+                alert("Mission Parameters Incomplete: Please upload your Resume and fill all fields.");
+                return;
+            }
+
+            // --- VISUAL STATES ---
+            btn.innerHTML = 'UPLOADING... <i class="fas fa-spinner fa-spin"></i>';
+            btn.style.opacity = '0.7';
+            btn.style.pointerEvents = 'none';
+
+            // --- BACKEND CONNECTION (FORMDATA) ---
+            const formData = new FormData();
+            formData.append('resume', fileInput.files[0]);
+            formData.append('title', title);
+            formData.append('description', desc);
+
+            try {
+                // Flask backend (/upload) ko data bhejna
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    // Agar file save ho gayi, toh 1.5s baad interview page par bhej do
+                    setTimeout(() => {
+                        window.location.href = '/interview';
+                    }, 1500);
+                } else {
+                    // Agar server error de (jaise app.py band ho)
+                    alert("Upload failed. Make sure your Python server (app.py) is running.");
+                    btn.innerHTML = 'START MISSION <i class="fas fa-bolt"></i>';
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Connection Error: Could not reach the server.");
+                btn.innerHTML = 'START MISSION <i class="fas fa-bolt"></i>';
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
+            }
+        });
+    </script>
+</body>
+
+</html>

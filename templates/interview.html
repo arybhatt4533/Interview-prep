@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Session | AI Interview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style2.css') }}">
+</head>
+
+<body class="interview-body">
+
+    <div class="secure-overlay"></div>
+
+    <main class="interview-container">
+        <div class="i-triple-grid">
+
+            <aside class="feeds-aside">
+                <section class="feed-panel interviewer-window">
+                    <div class="black-screen">
+                        <i class="fas fa-robot-astray"></i>
+                    </div>
+                    <div class="video-label ai-label">
+                        <span class="status-dot"></span> SECURE_FEED: INTERVIEWER
+                    </div>
+                </section>
+
+                <section class="feed-panel student-window">
+                    <div class="live-window">
+                        <video id="webcam-feed" autoplay playsinline muted></video>
+                        <div class="cyber-overlay"></div>
+                    </div>
+                    <div class="video-label user-label">
+                        CANDIDATE: SESSION_ACTIVE
+                    </div>
+                </section>
+            </aside>
+
+            <section class="terminal-card">
+                <div class="terminal-header">
+                    <div class="ai-status">INITIALIZING SYSTEM...</div>
+                </div>
+
+                <!-- 1. HTML mein ID sahi karo -->
+                <div class="conversation-terminal" id="chat-terminal">
+                    <div id="ai-question" style="color: #00ffcc; font-family: 'Courier New', monospace;">
+                        INITIALIZING AI INTERVIEWER...
+                    </div>
+                </div>
+
+                <!-- 2. Webcam ko activate karne ka script bhi add kar diya hai -->
+                <script>
+                    // Webcam feed shuru karne ke liye
+                    async function initCamera() {
+                        try {
+                            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                            document.getElementById('webcam-feed').srcObject = stream;
+                        } catch (err) {
+                            console.error("Camera access denied!", err);
+                        }
+                    }
+
+                    async function startInterview() {
+                        const questionBox = document.getElementById('ai-question');
+                        const statusHeader = document.querySelector('.ai-status');
+
+                        try {
+                            const response = await fetch('/ask_gemini', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    message: "I am ready for the interview. Start by asking me a tough technical question based on Python and BCA subjects."
+                                })
+                            });
+
+                            const data = await response.json();
+
+                            if (data.bot_response) {
+                                questionBox.innerText = data.bot_response;
+                                statusHeader.innerText = "SYSTEM_ONLINE: INTERVIEW_IN_PROGRESS";
+                            } else {
+                                questionBox.innerText = "Error: AI silent hai. API key check karo.";
+                            }
+                        } catch (error) {
+                            questionBox.innerText = "Connection lost! Server restart karo.";
+                        }
+                    }
+
+                    function terminateSession() {
+                        const btn = document.querySelector('.btn-end');
+                        btn.innerHTML = 'TERMINATING... <i class="fas fa-spinner fa-spin"></i>';
+                        btn.style.background = '#d32f2f';
+                        btn.style.pointerEvents = 'none';
+
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 2000);
+                    }
+
+                    // Dono kaam page load par
+                    window.onload = () => {
+                        initCamera();
+                        startInterview();
+                    };
+                </script>
+
+                <div class="terminal-footer">
+                    <button class="btn-end" onclick="terminateSession()">END SESSION</button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+</body>
+
+</html>

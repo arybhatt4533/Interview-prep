@@ -1,0 +1,123 @@
+:root {
+    --bg: #010409;
+    --card: #0d1117;
+    --ai-blue: #2f81f7;
+    --user-green: #238636;
+    --border: #30363d;
+}
+
+body {
+    background: var(--bg);
+    margin: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #e6edf3;
+    overflow: hidden;
+}
+
+.interview-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.i-triple-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr; /* Left: Windows, Right: Terminal */
+    gap: 20px;
+    width: 100%;
+    height: 90vh;
+}
+
+.feeds-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Common Window Style */
+.feed-panel {
+    background: #000;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    flex: 1; /* Dono windows equal size ki rahengi */
+}
+
+/* Interviewer Window (Black Screen) */
+.interviewer-window {
+    border-color: var(--ai-blue);
+}
+
+.black-screen {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, #0a0c10 0%, #000000 100%);
+}
+
+/* Student Window */
+.student-window {
+    border-color: var(--user-green);
+}
+
+#webcam-feed {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Labels */
+.video-label {
+    position: absolute;
+    bottom: 12px; left: 12px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 5px 10px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    border-radius: 6px;
+    letter-spacing: 1.5px;
+    z-index: 10;
+}
+
+.ai-label { color: var(--ai-blue); border-left: 2px solid var(--ai-blue); }
+.user-label { color: var(--user-green); border-left: 2px solid var(--user-green); }
+
+/* Terminal Styling (Clean & Empty) */
+.terminal-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.conversation-terminal {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Footer elements */
+.terminal-footer {
+    border-top: 1px solid var(--border);
+    margin-top: 15px;
+    padding-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-end {
+    background: #da3633;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 800;
+    cursor: pointer;
+}
