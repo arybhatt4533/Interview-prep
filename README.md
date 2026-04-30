@@ -1,4 +1,4 @@
-# 🤖 AI Interview Pro
+# 🤖 Interview Prepration 
 
 ### *Your Personal AI Technical Interviewer*
 
